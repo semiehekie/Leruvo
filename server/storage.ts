@@ -204,10 +204,23 @@ export class DatabaseStorage implements IStorage {
       .where(eq(examSubmissions.id, submissionId));
   }
 
-  async getSubmissionsByExam(examId: string): Promise<ExamSubmission[]> {
+  async getSubmissionsByExam(examId: string): Promise<any[]> {
     return await db
-      .select()
+      .select({
+        id: examSubmissions.id,
+        examId: examSubmissions.examId,
+        studentId: examSubmissions.studentId,
+        content: examSubmissions.content,
+        submittedAt: examSubmissions.submittedAt,
+        violations: examSubmissions.violations,
+        tabSwitchCount: examSubmissions.tabSwitchCount,
+        studentFirstName: users.firstName,
+        studentLastName: users.lastName,
+        studentEmail: users.email,
+        studentUsername: users.username
+      })
       .from(examSubmissions)
+      .leftJoin(users, eq(examSubmissions.studentId, users.id))
       .where(eq(examSubmissions.examId, examId))
       .orderBy(desc(examSubmissions.submittedAt));
   }
@@ -259,6 +272,14 @@ export class DatabaseStorage implements IStorage {
       .update(examSessions)
       .set({ isActive: false })
       .where(eq(examSessions.id, sessionId));
+  }
+
+  async getSessionsByExam(examId: string): Promise<ExamSession[]> {
+    return await db
+      .select()
+      .from(examSessions)
+      .where(eq(examSessions.examId, examId))
+      .orderBy(desc(examSessions.startedAt));
   }
 }
 

@@ -149,18 +149,31 @@ export default function TeacherDashboard() {
               <i className="fas fa-tachometer-alt"></i>
               <span>Dashboard</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg">
+            <button 
+              onClick={() => {
+                document.querySelector('[data-testid="section-classes"]')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="flex items-center space-x-3 px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg w-full text-left"
+            >
               <i className="fas fa-users"></i>
               <span>Classes</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg">
+            </button>
+            <button 
+              onClick={() => {
+                document.querySelector('[data-testid="section-exams"]')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="flex items-center space-x-3 px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg w-full text-left"
+            >
               <i className="fas fa-file-alt"></i>
               <span>Exams</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg">
+            </button>
+            <button 
+              onClick={() => navigate('/results')}
+              className="flex items-center space-x-3 px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg w-full text-left"
+            >
               <i className="fas fa-chart-bar"></i>
               <span>Results</span>
-            </a>
+            </button>
           </div>
         </nav>
 
@@ -290,7 +303,7 @@ export default function TeacherDashboard() {
             </div>
 
             {/* Classes Table */}
-            <Card className="mb-8">
+            <Card className="mb-8" data-testid="section-classes">
               <CardHeader>
                 <CardTitle>Recent Classes</CardTitle>
               </CardHeader>
@@ -359,7 +372,7 @@ export default function TeacherDashboard() {
             </Card>
 
             {/* Active Exams Monitoring */}
-            <Card>
+            <Card data-testid="section-exams">
               <CardHeader>
                 <CardTitle>Live Exam Monitoring</CardTitle>
               </CardHeader>
@@ -386,7 +399,11 @@ export default function TeacherDashboard() {
                               <i className="fas fa-circle text-xs mr-1 animate-pulse"></i>
                               Live
                             </span>
-                            <Button size="sm" data-testid={`button-monitor-exam-${exam.id}`}>
+                            <Button 
+                              size="sm" 
+                              data-testid={`button-monitor-exam-${exam.id}`}
+                              onClick={() => navigate(`/exam/${exam.id}/monitor`)}
+                            >
                               Monitor
                             </Button>
                           </div>

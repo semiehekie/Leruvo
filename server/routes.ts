@@ -161,10 +161,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Only teachers can create exams" });
       }
 
-      const examData = insertExamSchema.parse({
+      // Process the request body to handle date strings
+      const processedBody = {
         ...req.body,
-        teacherId: user.id
-      });
+        teacherId: user.id,
+        startTime: req.body.startTime ? new Date(req.body.startTime) : null,
+        endTime: req.body.endTime ? new Date(req.body.endTime) : null
+      };
+
+      const examData = insertExamSchema.parse(processedBody);
 
       const newExam = await storage.createExam(examData);
       res.json(newExam);
@@ -288,6 +293,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching submissions:", error);
       res.status(500).json({ message: "Failed to fetch submissions" });
+    }
+  });
+
+  // Get exam sessions for monitoring
+  app.get('/api/exams/:examId/sessions', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = req.user;
+      const examId = req.params.examId;
+      
+      // Check if user is teacher of this exam
+      const exam = await storage.getExam(examId);
+      if (!exam || exam.teacherId !== user.id) {
+        return res.status(403).json({ message: "Unauthorized to view sessions" });
+      }
+
+      const sessions = await storage.getSessionsByExam(examId);
+      res.json(sessions);
+    } catch (error) {
+      console.error("Error fetching sessions:", error);
+      res.status(500).json({ message: "Failed to fetch sessions" });
     }
   });
 
